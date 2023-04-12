@@ -107,6 +107,19 @@
 
         
         
+            <!-- Article Img Lightbox -->
+            <div class="gallery">
+    
+    
+    <div class="lightbox">
+        <!-- Close Button -->
+        <span class="close-gallery">&times;</span>
+        
+        <!-- Photo -->
+        <img class="gallery-photo">
+    </div>
+</div>
+        
     
 
     
@@ -200,7 +213,24 @@ I do not figure out the detailed infrastructure configuration, like image size, 
 <li>
 The performance is good to test dataloader and model build by myself separately. However, not together...💢
 </li>
-</ol>  
+<li>
+update<font color=Blue>April, 12</font>, dataloader is wrong! repairing... 
+<ul>
+<li>
+Numpy.ndarray or list or ..., will be the tensor through the DATALOADER.
+</li>
+<li>
+In image transform, PIL is .size[0] is width, .size[1] is height. However, when transform to tensor, .shape[0] is height, .shape[1] is width. It is reverse.
+</li>
+</ul>
+</li>
+</ol>
+
+<p>❗transform:<br><img src="https://raw.githubusercontent.com/Glutaredoxin/image/main/image_test.png" alt="FEM_standard_image"><br><img src="https://raw.githubusercontent.com/Glutaredoxin/image/main/pascal_image_test.png" alt="self_image"></p>
+<p><img src="https://raw.githubusercontent.com/Glutaredoxin/image/main/label_test_2.png" alt="FEM_standard_label"><br><img src="https://raw.githubusercontent.com/Glutaredoxin/image/main/pascal_label_test.png" alt="self_label"></p>
+<p>We can see, color, size, crop and padding is wrong! origin image do not change scale of image, however, our image change the scale of image.</p>
+<p>So, we need to change the transform.</p>
+  
     </div> 
 
     
