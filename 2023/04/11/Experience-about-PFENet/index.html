@@ -97,7 +97,7 @@
     
         <!-- Article Catalog -->
         <div class="catalog-dropdown col-xs-12 col-sm-12">
-            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%F0%9F%98%BFExperience-about-PFENet"><span class="toc-number">1.</span> <span class="toc-text">😿Experience about PFENet</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8D%8Esetting"><span class="toc-number">1.1.</span> <span class="toc-text">🍎setting:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8D%89details"><span class="toc-number">1.2.</span> <span class="toc-text">🍉details:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A5%95core-code"><span class="toc-number">1.3.</span> <span class="toc-text">🥕core code:</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#prior-generation"><span class="toc-number">1.3.1.</span> <span class="toc-text">prior generation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FEM"><span class="toc-number">1.3.2.</span> <span class="toc-text">FEM</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A5%9Dproblem"><span class="toc-number">1.4.</span> <span class="toc-text">🥝problem:</span></a></li></ol></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%F0%9F%98%BFExperience-about-PFENet"><span class="toc-number">1.</span> <span class="toc-text">😿Experience about PFENet</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8D%8Esetting"><span class="toc-number">1.1.</span> <span class="toc-text">🍎setting:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8D%89details"><span class="toc-number">1.2.</span> <span class="toc-text">🍉details:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A5%95core-code"><span class="toc-number">1.3.</span> <span class="toc-text">🥕core code:</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#prior-generation"><span class="toc-number">1.3.1.</span> <span class="toc-text">prior generation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FEM"><span class="toc-number">1.3.2.</span> <span class="toc-text">FEM</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A5%9Dproblem"><span class="toc-number">1.4.</span> <span class="toc-text">🥝problem:</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9D%93PIL-and-cv2"><span class="toc-number">1.4.1.</span> <span class="toc-text">❓PIL and cv2</span></a></li></ol></li></ol></li></ol>
         </div>
     
 
@@ -226,10 +226,305 @@ In image transform, PIL is .size[0] is width, .size[1] is height. However, when 
 </li>
 </ol>
 
-<p>❗transform:<br><img src="https://raw.githubusercontent.com/Glutaredoxin/image/main/image_test.png" alt="FEM_standard_image"><br><img src="https://raw.githubusercontent.com/Glutaredoxin/image/main/pascal_image_test.png" alt="self_image"></p>
+<p>❗transform:</p>
+<p><img src="https://raw.githubusercontent.com/Glutaredoxin/image/main/image_test.png" alt="FEM_standard_image"><br><img src="https://raw.githubusercontent.com/Glutaredoxin/image/main/pascal_image_test.png" alt="self_image"></p>
 <p><img src="https://raw.githubusercontent.com/Glutaredoxin/image/main/label_test_2.png" alt="FEM_standard_label"><br><img src="https://raw.githubusercontent.com/Glutaredoxin/image/main/pascal_label_test.png" alt="self_label"></p>
 <p>We can see, color, size, crop and padding is wrong! origin image do not change scale of image, however, our image change the scale of image.</p>
 <p>So, we need to change the transform.</p>
+<pre><code>import random
+import collections
+import numbers
+import math
+
+from PIL import Image
+from scipy import ndimage
+import numpy as np
+import torch
+import torchvision.transforms.functional as tr_F
+import cv2
+
+class Resize(object):
+    def __init__(self, size):
+        self.size = size
+
+    def __call__(self, sample):
+        image, label = sample[&#39;image&#39;], sample[&#39;semantic_mask&#39;]
+
+        def find_new_hw(ori_h, ori_w, test_size):
+            # print(ori_h)
+            # print(type(ori_h))
+            if ori_h &gt;= ori_w:
+                ratio = test_size * 1 / ori_h
+                new_h = test_size
+                new_w = int(ori_w * ratio)
+            elif ori_w &gt; ori_h:
+                ratio = test_size * 1 / ori_w
+                new_h = int(ori_h * ratio)
+                new_w = test_size
+
+            if new_h % 8 != 0:
+                new_h = (int(new_h / 8)) * 8
+            else:
+                new_h = new_h
+            if new_w % 8 != 0:
+                new_w = (int(new_w / 8)) * 8
+            else:
+                new_w = new_w
+            return new_h, new_w
+
+        new_h, new_w = find_new_hw(image.size[0], image.size[1], self.size)
+        img = tr_F.resize(image, [int(new_w), int(new_h)], interpolation=Image.NEAREST)
+        back_crop = np.zeros((self.size, self.size, 3), dtype=np.uint8)
+        back_crop[:new_w, :new_h, :] = img
+        image = back_crop
+
+        new_h, new_w = find_new_hw(label.size[0], label.size[1], self.size)
+        label = tr_F.resize(label, [int(new_w), int(new_h)], interpolation=Image.NEAREST)
+        back_crop_s_mask = np.ones((self.size, self.size)) * 255
+        back_crop_s_mask[:new_w, :new_h] = label
+        label = back_crop_s_mask
+
+        sample[&#39;image&#39;] = image
+        sample[&#39;semantic_mask&#39;] = label
+
+        return sample
+
+class ToTensorNormalize(object):
+    &quot;&quot;&quot;
+    Convert images/masks to torch.Tensor
+    Scale images&#39; pixel values to [0-1] and normalize with predefined statistics
+    &quot;&quot;&quot;
+
+    def __call__(self, sample):
+        img, label = sample[&#39;image&#39;], sample[&#39;semantic_mask&#39;]
+        img = tr_F.to_tensor(img)
+        img = tr_F.normalize(img, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        if isinstance(label, dict):
+            label = &#123;catId: torch.Tensor(np.array(x)).long()
+                     for catId, x in label.items()&#125;
+        else:
+            label = torch.Tensor(np.array(label)).long()
+        sample[&#39;image&#39;] = img
+        sample[&#39;semantic_mask&#39;] = label
+
+        return sample
+
+
+class RandScale(object):
+    def __init__(self, scale, aspect_ratio=None):
+        assert (isinstance(scale, collections.Iterable) and len(scale) == 2)
+        if isinstance(scale, collections.Iterable) and len(scale) == 2 \
+                and isinstance(scale[0], numbers.Number) and isinstance(scale[1], numbers.Number) \
+                and 0 &lt; scale[0] &lt; scale[1]:
+            self.scale = scale
+        else:
+            raise (RuntimeError(&quot;segtransform.RandScale() scale param error.\n&quot;))
+        if aspect_ratio is None:
+            self.aspect_ratio = aspect_ratio
+        elif isinstance(aspect_ratio, collections.Iterable) and len(aspect_ratio) == 2 \
+                and isinstance(aspect_ratio[0], numbers.Number) and isinstance(aspect_ratio[1], numbers.Number) \
+                and 0 &lt; aspect_ratio[0] &lt; aspect_ratio[1]:
+            self.aspect_ratio = aspect_ratio
+        else:
+            raise (RuntimeError(&quot;segtransform.RandScale() aspect_ratio param error.\n&quot;))
+
+    def __call__(self, sample):
+        image, label = sample[&#39;image&#39;], sample[&#39;semantic_mask&#39;]
+        temp_scale = self.scale[0] + (self.scale[1] - self.scale[0]) * random.random()
+        temp_aspect_ratio = 1.0
+        if self.aspect_ratio is not None:
+            temp_aspect_ratio = self.aspect_ratio[0] + (self.aspect_ratio[1] - self.aspect_ratio[0]) * random.random()
+            temp_aspect_ratio = math.sqrt(temp_aspect_ratio)
+
+        scale_factor_x = temp_scale * temp_aspect_ratio
+        scale_factor_y = temp_scale / temp_aspect_ratio
+        image = tr_F.resize(image, [int(scale_factor_x * image.size[1]), int(scale_factor_y * image.size[0])],
+                            interpolation=Image.BILINEAR)
+        label = tr_F.resize(label, [int(scale_factor_x * label.size[1]), int(scale_factor_y * label.size[0])],
+                            interpolation=Image.NEAREST)
+
+        sample[&#39;image&#39;] = image
+        sample[&#39;semantic_mask&#39;] = label
+        return sample
+
+
+class RandRotate(object):
+    # Randomly rotate image &amp; label with rotate factor in [rotate_min, rotate_max]
+    def __init__(self, rotate, padding, ignore_label=255, p=0.5):
+        assert (isinstance(rotate, collections.Iterable) and len(rotate) == 2)
+        if isinstance(rotate[0], numbers.Number) and isinstance(rotate[1], numbers.Number) and rotate[0] &lt; rotate[1]:
+            self.rotate = rotate
+        else:
+            raise (RuntimeError(&quot;segtransform.RandRotate() scale param error.\n&quot;))
+        assert padding is not None
+        assert isinstance(padding, list) and len(padding) == 3
+        if all(isinstance(i, numbers.Number) for i in padding):
+            self.padding = padding
+        else:
+            raise (RuntimeError(&quot;padding in RandRotate() should be a number list\n&quot;))
+        assert isinstance(ignore_label, int)
+        self.ignore_label = ignore_label
+        self.p = p
+
+    def __call__(self, sample):
+        image, label = sample[&#39;image&#39;], sample[&#39;semantic_mask&#39;]
+        if random.random() &lt; self.p:
+            angle = self.rotate[0] + (self.rotate[1] - self.rotate[0]) * random.random()
+            h, w = label.size[-2:]
+            image = tr_F.rotate(image, angle=angle)
+            label = tr_F.rotate(label, angle=angle)
+
+        sample[&#39;image&#39;] = image
+        sample[&#39;semantic_mask&#39;] = label
+        return sample
+
+
+class RandomGaussianBlur(object):
+    def __init__(self, radius=5):
+        self.radius = radius
+
+    def __call__(self, sample):
+        image, label = sample[&#39;image&#39;], sample[&#39;semantic_mask&#39;]
+        if random.random() &lt; 0.5:
+            image = tr_F.gaussian_blur(image, [self.radius, self.radius], 3)
+        sample[&#39;image&#39;] = image
+        return sample
+
+
+class RandomHorizontalFlip(object):
+    def __init__(self, p=0.5):
+        self.p = p
+
+    def __call__(self, sample):
+        image, label = sample[&#39;image&#39;], sample[&#39;semantic_mask&#39;]
+        if random.random() &lt; self.p:
+            image = tr_F.hflip(image)
+            label = tr_F.hflip(label)
+
+        sample[&#39;image&#39;] = image
+        sample[&#39;semantic_mask&#39;] = label
+        return sample
+
+
+class RGB2BGR(object):
+    def __call__(self, sample):
+        image, label = sample[&#39;image&#39;], sample[&#39;semantic_mask&#39;]
+        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        sample[&#39;image&#39;] = image
+        return sample
+
+
+class Crop(object):
+    def __init__(self, size, crop_type=&#39;center&#39;, padding=None, ignore_label=255):
+        self.size = size
+        if isinstance(size, int):
+            self.crop_h = size
+            self.crop_w = size
+        elif isinstance(size, collections.Iterable) and len(size) == 2 \
+                and isinstance(size[0], int) and isinstance(size[1], int) \
+                and size[0] &gt; 0 and size[1] &gt; 0:
+            self.crop_h = size[0]
+            self.crop_w = size[1]
+        else:
+            raise (RuntimeError(&quot;crop size error.\n&quot;))
+        if crop_type == &#39;center&#39; or crop_type == &#39;rand&#39;:
+            self.crop_type = crop_type
+        else:
+            raise (RuntimeError(&quot;crop type error: rand | center\n&quot;))
+        if padding is None:
+            self.padding = padding
+        elif isinstance(padding, list):
+            if all(isinstance(i, numbers.Number) for i in padding):
+                self.padding = padding
+            else:
+                raise (RuntimeError(&quot;padding in Crop() should be a number list\n&quot;))
+            if len(padding) != 3:
+                raise (RuntimeError(&quot;padding channel is not equal with 3\n&quot;))
+        else:
+            raise (RuntimeError(&quot;padding in Crop() should be a number list\n&quot;))
+        if isinstance(ignore_label, int):
+            self.ignore_label = ignore_label
+        else:
+            raise (RuntimeError(&quot;ignore_label should be an integer number\n&quot;))
+
+    def __call__(self, sample):
+        image, label = sample[&#39;image&#39;], sample[&#39;semantic_mask&#39;]
+
+        self.padding = [int(temp) for temp in self.padding]
+        self.padding = tuple(self.padding)
+        h = label.size[0]
+        w = label.size[1]
+
+        pad_h = max(self.crop_h - h, 0)
+        pad_w = max(self.crop_w - w, 0)
+        pad_h_half = int(pad_h / 2)
+        pad_w_half = int(pad_w / 2)
+        pad_h = int(pad_h)
+        pad_w = int(pad_w)
+
+        if pad_h &gt; 0 or pad_w &gt; 0:
+            if self.padding is None:
+                raise (RuntimeError(&quot;segtransform.Crop() need padding while padding argument is None\n&quot;))
+            image = tr_F.pad(image, [int(pad_h - pad_h_half), int(pad_w - pad_w_half), pad_h_half, pad_w_half],
+                             fill=self.padding, padding_mode=&#39;constant&#39;)
+            # IMAGE = tr.RandomCrop((473, 473), padding = [pad_h_half, pad_h - pad_h_half, pad_w_half, pad_w - pad_w_half], pad_if_needed = False, fill = self.padding, padding_mode = &#39;constant&#39; )
+            label = tr_F.pad(label, [int(pad_h - pad_h_half), int(pad_w - pad_w_half), pad_h_half, pad_w_half],
+                             fill=255, padding_mode=&#39;constant&#39;)
+        h = label.size[0]
+        w = label.size[1]
+        image = np.array(image)
+        label = np.array(label)
+        raw_label = label
+        raw_image = image
+
+        if self.crop_type == &#39;rand&#39;:
+            h_off = random.randint(0, h - self.crop_h)
+            w_off = random.randint(0, w - self.crop_w)
+        else:
+            h_off = int((h - self.crop_h) / 2)
+            w_off = int((w - self.crop_w) / 2)
+        image = image[h_off:h_off + self.crop_h, w_off:w_off + self.crop_w]
+        label = label[h_off:h_off + self.crop_h, w_off:w_off + self.crop_w]
+        raw_pos_num = np.sum(raw_label == 1)
+        pos_num = np.sum(label == 1)
+        crop_cnt = 0
+        while (pos_num &lt; 0.85 * raw_pos_num and crop_cnt &lt;= 30):
+            image = raw_image
+            label = raw_label
+            if self.crop_type == &#39;rand&#39;:
+                h_off = random.randint(0, h - self.crop_h)
+                w_off = random.randint(0, w - self.crop_w)
+            else:
+                h_off = int((h - self.crop_h) / 2)
+                w_off = int((w - self.crop_w) / 2)
+            image = image[h_off:h_off + self.crop_h, w_off:w_off + self.crop_w]
+            label = label[h_off:h_off + self.crop_h, w_off:w_off + self.crop_w]
+            raw_pos_num = np.sum(raw_label == 1)
+            pos_num = np.sum(label == 1)
+            crop_cnt += 1
+        image = Image.fromarray(image.astype(&#39;uint8&#39;))
+        label = Image.fromarray(label.astype(&#39;uint8&#39;))
+        if crop_cnt &gt;= 50:
+            # image = cv2.resize(raw_image, (self.size[0], self.size[0]), interpolation=cv2.INTER_LINEAR)
+            image = tr_F.resize(raw_image, self.size, interpolation=Image.BILINEAR)
+            # label = cv2.resize(raw_label, (self.size[0], self.size[0]), interpolation=cv2.INTER_NEAREST)
+            label = tr_F.resize(raw_label, self.size, interpolation=Image.BILINEAR)
+
+        if image.size != (self.size[0], self.size[0], 3):
+            # image = cv2.resize(image, (self.size[0], self.size[0]), interpolation=cv2.INTER_LINEAR)
+            image = tr_F.resize(image, self.size, interpolation=Image.BILINEAR)
+            # label = cv2.resize(label, (self.size[0], self.size[0]), interpolation=cv2.INTER_NEAREST)
+            label = tr_F.resize(label, self.size, interpolation=Image.BILINEAR)
+
+        sample[&#39;image&#39;] = image
+        sample[&#39;semantic_mask&#39;] = label
+
+        return sample
+</code></pre>
+<h3 id="❓PIL-and-cv2"><a href="#❓PIL-and-cv2" class="headerlink" title="❓PIL and cv2"></a>❓PIL and cv2</h3><p>The image through cv2 can be transformed to <strong>np.array</strong>.</p>
+<p>The image through PIL can be transformed to <strong>PIL.image</strong>.</p>
+<p>When we do <strong>to_tensor()</strong>, image through cv2 is <strong>Channel number variation</strong>.<br>So when we utilize <code>image = image[:, :, ::-1]</code> or <code>img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)</code>, the origin color of cv2 image can be transformed to the color of PIL image.</p>
+<p>And the normalization of PIL image is <code>mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]</code>.<br>the normalization of cv2 image without channel variation is <code>mean=[0.485, 0.456, 0.406](*255), std=[0.229, 0.224, 0.225](*255)</code></p>
   
     </div> 
 

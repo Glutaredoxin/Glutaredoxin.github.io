@@ -97,7 +97,7 @@
     
         <!-- Article Catalog -->
         <div class="catalog-dropdown col-xs-12 col-sm-12">
-            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%F0%9F%96%8A%EF%B8%8FA-guide-of-paper-sentences"><span class="toc-number">1.</span> <span class="toc-text">🖊️A guide of paper sentences</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%91%89limited-data"><span class="toc-number">1.1.</span> <span class="toc-text">👉limited data</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B8Self-supervised-learning"><span class="toc-number">1.1.1.</span> <span class="toc-text">🔸Self-supervised learning:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8E%89some-localism"><span class="toc-number">1.2.</span> <span class="toc-text">🎉some localism</span></a></li></ol></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%F0%9F%96%8A%EF%B8%8FA-guide-of-paper-sentences"><span class="toc-number">1.</span> <span class="toc-text">🖊️A guide of paper sentences</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%91%89limited-data"><span class="toc-number">1.1.</span> <span class="toc-text">👉limited data</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%B8Self-supervised-learning"><span class="toc-number">1.1.1.</span> <span class="toc-text">🔸Self-supervised learning:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%91%89-Contrastive-Representation-Learning"><span class="toc-number">1.2.</span> <span class="toc-text">👉 Contrastive Representation Learning</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#lefted-structured-loss-2015-%E7%BB%93%E6%9E%84%E5%8C%96%E6%8D%9F%E5%A4%B1"><span class="toc-number">1.2.1.</span> <span class="toc-text">lefted structured loss (2015)[结构化损失]:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Multi-class-N-pair-loss-2016"><span class="toc-number">1.2.2.</span> <span class="toc-text">Multi-class N-pair loss (2016):</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NCE-Noise-Contrastive-Estimation"><span class="toc-number">1.2.3.</span> <span class="toc-text">NCE (Noise Contrastive Estimation):</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8E%89some-localism"><span class="toc-number">1.3.</span> <span class="toc-text">🎉some localism</span></a></li></ol></li></ol>
         </div>
     
 
@@ -178,12 +178,52 @@ Producing a dataset with clean labels is expensive but unlabeled data is being g
 <p>Negative sample: <strong>random sampling</strong><br>$[x_{t-3}, x_{t-2}, x_{t-1}, x_{t}]$ -&gt; $[x_{a}, x_{b}, x_{c}, x_{d}]$<br><img src="https://raw.githubusercontent.com/Glutaredoxin/image/main/CPC%20framework.jpg" alt="CPC_framework"></p>
 <p>Input anchor to encoder to obtain $[z_{t-3}, z_{t-2}, z_{t-1}, z_{t}]$, and then feed into 循环网络 to contxt vector $c_t$. <strong>It noted that $c_t$ is the feature across the multiple time steps.</strong></p>
 <p>$z_t$ and $c_t$ can be the feature representations of $x_t$. $z_t$ focuses on the single step and $c_t$ focuses on the multiple steps.</p>
+<h2 id="👉-Contrastive-Representation-Learning"><a href="#👉-Contrastive-Representation-Learning" class="headerlink" title="👉 Contrastive Representation Learning"></a>👉 Contrastive Representation Learning</h2><ol>
+<li>
+The goal of contrastive representation learning is to learn such an **embedding space** in which **similar sample pairs stay close to each other while dissimilar ones are far away**.
+</li>
+<li>
+Contrastive learning can be applied to both supervised and unsupervised settings. And **contrastive learning with unsupervised data is the most powerful approaches in self-supervised learning**.
+</li>
+</ol>
+
+<h3 id="lefted-structured-loss-2015-结构化损失"><a href="#lefted-structured-loss-2015-结构化损失" class="headerlink" title="lefted structured loss (2015)[结构化损失]:"></a>lefted structured loss (2015)[结构化损失]:</h3><p>unlike contrastive loss or triplet loss choose one negative, lefted structured loss chooses the all negative in mini-batch to compute loss.</p>
+<p>$$L &#x3D; \frac{1}{2|P|}\sum_{(i,j)\in P}max(0, L_{i,j})^2$$</p>
+<p>$$L_{i,j}&#x3D;max(max_{(i,k)\in N}(\alpha-D_{i,k}), max_{(j,k) \in N}(\alpha-D_{j,k})) + D_{i,j}$$</p>
+<p>So, loss is composed by the minimal distance from i or from j, and the embedding distance between i and j.<br><strong>The lifted structure loss will considers all negative samples in mini-batch for each positive samples i and j.</strong></p>
+<h3 id="Multi-class-N-pair-loss-2016"><a href="#Multi-class-N-pair-loss-2016" class="headerlink" title="Multi-class N-pair loss (2016):"></a>Multi-class N-pair loss (2016):</h3><p>$$L_{n-pair}(x, x^{+}, {x_i^{-}}<em>{i&#x3D;1}^{N-1})&#x3D;-log \frac{exp(f(x)^Tf(x^+))}{exp(f(x)^Tf(x^+)) + \sum</em>{i&#x3D;1}^{N-1}exp(f(x)^Tf(x_i^{-}))}$$</p>
+<p>we can see, if we only sample one negative sample per class, it is euivalent to the <strong>softmax loss for multi-class classification</strong>.</p>
+<h3 id="NCE-Noise-Contrastive-Estimation"><a href="#NCE-Noise-Contrastive-Estimation" class="headerlink" title="NCE (Noise Contrastive Estimation):"></a>NCE (Noise Contrastive Estimation):</h3><p>run logistic regression to tell apart the target data from noise.</p>
+<ol>
+<li>
+InfoNCE(2018) -- CPC
+</li>
+<li>
+Soft-Nearest Neighbors loss(2019)
+</li>
+</ol>
+The relationship of InfoNCE and cross-entropy loss:
+
+<p>Let’s start with softmax:<br>$$\hat{y_{+}}&#x3D;softmax(z_{+})&#x3D;\frac{exp(z_{+})}{\sum_{i&#x3D;0}^{k}exp(z_{i})}$$</p>
+<p>and cross-entropy loss:<br>$$L(\hat{y})&#x3D;-\sum_{i \in K}y_ilog(\hat{y_i})&#x3D;-log\frac{exp(z_{+})}{\sum_{i&#x3D;0}^{k}exp(z_{i})}$$</p>
+<p>and k is the number of classes.</p>
+<p>if we use cross-entropy to compute the contrastive learning, it is unsuccessful. Because through data augmentation, <strong>the number of images we have, the number of classes we have,</strong> and the dimentional of one-hot vector is so high.</p>
+<p>So we introduce the NCE loss. we <strong>split the multi-classification into binary-classification</strong>. one class is data sample and another is noisy sample. 我们将数据样本与噪声样本进行比较，根据噪声对比，发现数据中的某些特性。当然，如果将整个数据集剩下的数据都当作负样本，计算复杂度很高，所以我们对负样本进行采样。当然，负样本选取越多，越接近整个数据集，效果越好。</p>
+<p>但是，NCE Loss只是二分类，也就是将所有负样本都当作一个类，但其实负样本是由多个类组成的，所以还是当成多分类任务比较好。</p>
+<p>$$L_q &#x3D; -log\frac{exp(q k_{+})}{\sum_{i&#x3D;0}^{k}exp(q k_{i})}$$</p>
+<p>这里的k其实就是采样的负样本数量。</p>
 <h2 id="🎉some-localism"><a href="#🎉some-localism" class="headerlink" title="🎉some localism"></a>🎉some localism</h2><ol>
 <li>
 The motivation is quite straightforward.
 </li>
 <li>
 Broadly speaking, 
+</li>
+<li>
+NXX CXX, short for NC. (简称)
+</li>
+<li>
+tell apart A from B. 区分A和B
 </li>
 </ol>  
     </div> 
