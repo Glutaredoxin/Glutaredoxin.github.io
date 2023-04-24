@@ -525,6 +525,310 @@ class Crop(object):
 <p>The image through PIL can be transformed to <strong>PIL.image</strong>.</p>
 <p>When we do <strong>to_tensor()</strong>, image through cv2 is <strong>Channel number variation</strong>.<br>So when we utilize <code>image = image[:, :, ::-1]</code> or <code>img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)</code>, the origin color of cv2 image can be transformed to the color of PIL image.</p>
 <p>And the normalization of PIL image is <code>mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]</code>.<br>the normalization of cv2 image without channel variation is <code>mean=[0.485, 0.456, 0.406](*255), std=[0.229, 0.224, 0.225](*255)</code></p>
+<p>❗data:</p>
+<p>从相同数据集，根据不同采样规则取出不同的训练数据以及测试数据，效果完全不同。</p>
+<p>之前也猜测可能是数据本身分类的问题，但是我认为少样本分割都集中于episodes中进行训练，但是后面发现着这种想法是错误的。</p>
+<p>第一阶段：从所有数据集中挑选符合要求的样本组成episodes。有重复数据。准确度 – 47%</p>
+<p>第二阶段：从所有数据集中挑选符合要求的样本组成episodes。去除重复数据。准确度 – 49%</p>
+<p>第三阶段：只从规定的文件voc_sbd_merge_noduplicate.txt文件中提取相应的样本组成episodes。准确度 – （50epoches）</p>
+<p>dataset code：</p>
+<pre><code>import random
+from torch.utils.data import Dataset
+import numpy as np
+from PIL import Image
+import torch
+import os
+import time
+import logging
+
+class voc_fewshot(Dataset):
+    def __init__(self, base_dir, split, n_ways, n_shots, fold, transformer, to_tensor, n_queries=1):
+        # base_path
+        self.base_dir = base_dir
+        # trainaug
+        self.split = split
+        # fold
+        self.fold = fold
+        self.n_ways = n_ways
+        # n_shots
+        self.n_shots = n_shots
+        # transforms
+        self.transformer = transformer
+        # to_tensor
+        self.to_tensor = to_tensor
+
+        # image path
+        self.image_dir = os.path.join(self.base_dir, &quot;JPEGImages&quot;)
+        # class segment
+        self.class_dir = os.path.join(self.base_dir, &quot;SegmentationClassAug&quot;)
+        # instance segment
+        self.inst_dir = os.path.join(self.base_dir, &quot;SegmentationObjectAug&quot;)
+        # scribble segment
+        self.scribble_dir = os.path.join(self.base_dir, &quot;ScribbleAugAuto&quot;)
+        # train, val, test, trainaug
+        self.id_dir = os.path.join(self.base_dir, &quot;ImageSets&quot;, &quot;Segmentation&quot;)
+
+        # train or val.txt
+        with open(os.path.join(self.id_dir, f&#39;&#123;self.split&#125;.txt&#39;), &#39;r&#39;) as f:
+            self.ids = f.read().splitlines()
+
+        self.image_label_list = []
+        self.sub_class_file_list = &#123;&#125;
+        for sub_c in self.fold:
+            self.sub_class_file_list[sub_c] = []
+
+        for temp_id in self.ids:
+            temp_id = temp_id.strip()
+            temp_path = temp_id.split(&#39; &#39;)
+            # print(temp_path)
+            image_path = os.path.join(self.base_dir, temp_path[0])
+            label_path = os.path.join(self.base_dir, temp_path[1])
+            item_path = (image_path, label_path)
+
+            label = np.array(Image.open(label_path))
+            label_class = np.unique(label).tolist()
+
+            if 0 in label_class:
+                label_class.remove(0)
+            if 255 in label_class:
+                label_class.remove(255)
+
+            new_label_class = []
+            for c in label_class:
+               if c in self.fold:
+                   tmp_label = np.zeros_like(label)
+                   target_pix = np.where(label == c)
+                   tmp_label[target_pix[0], target_pix[1]] = 1
+                   if tmp_label.sum() &gt;= 2 * 32 * 32:
+                       new_label_class.append(c)
+            # 只有对应的标签值大于2 * 32 * 32才作数
+            label_class = new_label_class
+
+            # image_label_list -- 对应的query数据集
+            # sub_class_file_list -- 按顺序将这些item放在对应标签中
+            # 如果有的图片中所含有的每个标签数量都小于2*32*32，那么这个图片就被舍弃
+            if len(label_class) &gt; 0:
+                self.image_label_list.append(item_path)
+                for c in label_class:
+                    if c in self.fold:
+                        self.sub_class_file_list[c].append(item_path)
+
+    def __getitem__(self, item):
+        temp_dict = &#123;&#125;
+
+        image_path, label_path = self.image_label_list[item]
+        image = Image.open(image_path)
+        label = Image.open(label_path)
+        sample_temp = &#123;
+            &#39;image&#39;: image,
+            &#39;semantic_mask&#39;: label
+        &#125;
+
+        ori_label = sample_temp[&#39;semantic_mask&#39;]
+
+        sample_temp = self.transformer(sample_temp)
+
+        # origin image
+        image_t = torch.from_numpy(np.array(sample_temp[&#39;image&#39;]).transpose(2, 0, 1))
+        # origin label
+        ori_labels = torch.from_numpy(np.array(ori_label))
+
+        sample_temp = self.to_tensor(sample_temp)
+
+        sample_temp[&#39;ids&#39;] = image_path.split(&#39;/&#39;)[1].split(&#39;.&#39;)[0]
+        sample_temp[&#39;image_t&#39;] = image_t
+        sample_temp[&#39;ori_label&#39;] = ori_labels
+
+        ### query ###
+        ### support ###
+        label1 = np.array(label)
+        label_class = np.unique(label1).tolist()
+
+        if 0 in label_class:
+            label_class.remove(0)
+        if 255 in label_class:
+            label_class.remove(255)
+        new_label_class = []
+        for c in label_class:
+            if c in self.fold:
+                new_label_class.append(c)
+
+        label_class = new_label_class
+
+        class_chosen = label_class[random.randint(1, len(label_class))-1]
+
+        support_class_chosen = self.sub_class_file_list[class_chosen]
+
+        self.support_image_path_list = []
+        self.support_label_path_list = []
+        self.support_idx_list = []
+        for shot in range(self.n_shots):
+            support_idx = random.randint(1, len(support_class_chosen))-1
+            support_image_path = image_path
+            support_label_path = label_path
+            while((support_image_path == image_path and support_label_path == label_path) or support_idx in self.support_idx_list):
+                support_idx = random.randint(1, len(support_class_chosen)) - 1
+                support_image_path, support_label_path = support_class_chosen[support_idx]
+            self.support_idx_list.append(support_idx)
+            self.support_image_path_list.append(support_image_path)
+            self.support_label_path_list.append(support_label_path)
+
+        for shot in range(self.n_shots):
+            s_temp_image_path = self.support_image_path_list[shot]
+            s_temp_label_path = self.support_label_path_list[shot]
+            support_image = Image.open(s_temp_image_path)
+            support_label = Image.open(s_temp_label_path)
+            support_sample_temp = &#123;&#39;image&#39;: support_image,
+                                   &#39;semantic_mask&#39;: support_label&#125;
+            support_ori_label = support_sample_temp[&#39;semantic_mask&#39;]
+            support_sample_temp = self.transformer(support_sample_temp)
+            support_image_t = torch.from_numpy(np.array(support_sample_temp[&#39;image&#39;]).transpose(2, 0, 1))
+            support_ori_label = torch.from_numpy(np.array(support_ori_label))
+            support_sample_temp = self.to_tensor(support_sample_temp)
+            support_sample_temp[&#39;ids&#39;] = s_temp_image_path.split(&#39;/&#39;)[1].split(&#39;.&#39;)[0]
+            support_sample_temp[&#39;image_t&#39;] = support_image_t
+            support_sample_temp[&#39;ori_label&#39;] = support_ori_label
+
+            if class_chosen in temp_dict.keys():
+                temp_dict[class_chosen].append(support_sample_temp)
+            else:
+                temp_dict[class_chosen] = [support_sample_temp]
+
+        if class_chosen in temp_dict.keys():
+            temp_dict[class_chosen].append(sample_temp)
+        else:
+            temp_dict[class_chosen] = [sample_temp]
+
+        class_ids = [temp_values for temp_values in temp_dict.keys()]
+
+        support_images = [[temp_values[j][&#39;image&#39;] for j in range(self.n_shots)] for temp_values in temp_dict.values()]
+        support_images_t = [[temp_values[j][&#39;image_t&#39;] for j in range(self.n_shots)] for temp_values in
+                            temp_dict.values()]
+        support_labels = [[temp_values[j][&#39;semantic_mask&#39;] for j in range(self.n_shots)] for temp_values in
+                          temp_dict.values()]
+
+        # query
+        query_images = [[temp_values[j][&#39;image&#39;] for j in range(1, len(temp_values))] for temp_values in
+                        temp_dict.values()]
+        query_images = [ele for ele in query_images if ele != []]
+        query_images_t = [[temp_values[j][&#39;image_t&#39;] for j in range(1, len(temp_values))] for temp_values in
+                          temp_dict.values()]
+        query_images_t = [ele for ele in query_images_t if ele != []]
+        query_labels = [[temp_values[j][&#39;semantic_mask&#39;] for j in range(1, len(temp_values))] for temp_values in
+                        temp_dict.values()]
+        query_labels = [ele for ele in query_labels if ele != []][0]
+
+        query_labels_ori = [[temp_values[j][&#39;ori_label&#39;] for j in range(1, len(temp_values))] for temp_values in
+                            temp_dict.values()]
+        query_labels_ori = [ele for ele in query_labels_ori if ele != []][0]
+
+        query_cls_idx = [sorted([0, ] + [class_ids.index(x) + 1
+                                         for x in set(np.unique(query_label)) &amp; set(class_ids)])
+                         for query_label in query_labels]
+        support_mask = [[self.getMask(support_labels[way][shot],
+                                      class_ids[way], class_ids)
+                         for shot in range(self.n_shots)] for way in range(self.n_ways)]
+
+        # --- given 0, 1, 255
+        query_labels_tmp = [torch.zeros_like(x) for x in query_labels]
+        for i, query_label_tmp in enumerate(query_labels_tmp):
+            query_label_tmp[query_labels[i] == 255] = 255
+            for j in range(self.n_ways):
+                query_label_tmp[query_labels[i] == class_ids[j]] = j + 1
+
+        query_labels_tmp_ori = [torch.zeros_like(x) for x in query_labels_ori]
+        for i, query_label_tmp_ori in enumerate(query_labels_tmp_ori):
+            query_label_tmp_ori[query_labels_ori[i] == 255] = 255
+            for j in range(self.n_ways):
+                query_label_tmp_ori[query_labels_ori[i] == class_ids[j]] = j + 1
+
+        query_masks = [[torch.where(query_label == 0,
+                                    torch.ones_like(query_label),
+                                    torch.zeros_like(query_label))[None, ...], ]
+                       for query_label in query_labels]
+
+        for i, query_label in enumerate(query_labels):
+            for idx in query_cls_idx[i][1:]:
+                mask = torch.where(query_label == class_ids[idx - 1],
+                                   torch.ones_like(query_label),
+                                   torch.zeros_like(query_label))[None, ...]
+                query_masks[i].append(mask)
+
+
+        return &#123;&#39;class_ids&#39;: class_ids,
+
+                &#39;support_images_t&#39;: support_images_t,
+                &#39;support_images&#39;: support_images,
+                &#39;support_mask&#39;: support_mask,
+
+                &#39;query_images_t&#39;: query_images_t,
+                &#39;query_images&#39;: query_images,
+                &#39;query_labels&#39;: query_labels_tmp,
+                &#39;query_masks&#39;: query_masks,
+                &#39;query_cls_idx&#39;: query_cls_idx,
+                &#39;query_labels_ori&#39;: query_labels_tmp_ori,
+                &#125;
+
+    def load_image(self):
+        all_dict = &#123;&#125;
+        for label, id in self.subset.items():
+            for ids in id:
+                if label in all_dict.keys():
+                    all_dict[label].append(ids)
+                else:
+                    all_dict[label] = [ids]
+        return all_dict
+
+    def sub_fold_set(self):
+        # random select classes in fold
+        self.fold = list(self.fold)
+        classes1 = np.random.choice(self.fold, size=self.n_ways, replace=False)
+
+        for label in classes1:
+            if label in self.selected_classes and len(self.class_item[label]) &lt; (self.n_shots + 1):
+                # print(label)
+                self.fold.remove(label)
+                classes1 = np.random.choice(self.fold, size=self.n_ways, replace=False)
+
+        for label in classes1:
+            if label not in self.selected_classes:
+                self.selected_classes.append(label)
+                sublabel = []
+                with open(os.path.join(self.id_dir, self.split, &#39;class&#123;&#125;.txt&#39;.format(label)), &#39;r&#39;) as f:
+                    sublabel.append(f.read().splitlines())
+                self.class_item[label] = sublabel[0]
+        cnt_query = np.bincount(random.choices(population=range(self.n_ways), k=self.n_queries), minlength=self.n_ways)
+        n_elements = [self.n_shots + x for x in cnt_query]
+
+        extract_id = &#123;&#125;
+        # print(self.class_item)
+        for item, label in enumerate(classes1):
+            # temp = random.choices(class_item[label], k=n_elements[item])
+            # print(len(self.class_item[label]))
+            temp = np.random.choice(self.class_item[label], size=n_elements[item], replace=False)
+            extract_id[label] = temp
+
+            for t_temp in temp:
+                self.class_item[label].remove(t_temp)
+
+        return extract_id
+
+    def getMask(self, label, class_id, class_ids):
+        # 属于该类别的像素设置为1
+        fg_mask = torch.where(label == class_id, torch.ones_like(label), torch.zeros_like(label))
+        bg_mask = torch.where(label != class_id, torch.ones_like(label), torch.zeros_like(label))
+        # 只要标签有episode中的类别，就设置为1
+        for class_id in class_ids:
+            bg_mask[label == class_id] = 0
+
+
+        return &#123;&#39;fg_mask&#39;: fg_mask,
+                &#39;bg_mask&#39;: bg_mask, &#125;
+
+
+    def __len__(self):
+        return len(self.image_label_list)
+</code></pre>
   
     </div> 
 
