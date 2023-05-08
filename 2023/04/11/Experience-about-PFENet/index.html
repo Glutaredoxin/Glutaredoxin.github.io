@@ -829,6 +829,25 @@ class voc_fewshot(Dataset):
     def __len__(self):
         return len(self.image_label_list)
 </code></pre>
+<p>最终,根据voc_sbd_merge_noduplicate.txt训练出来的准确度是54.74%。<br>所以，得出结论：</p>
+<p>train：voc_sbd_merge_noduplicate.txt</p>
+<p>val：val.txt</p>
+<p>在测试阶段，我们发现加载模型出错，原因是每个参数名都增加了一个’module.’。这可能是因为我们使用了命令：</p>
+<pre><code>nn.ModuleList
+</code></pre>
+<p>这需要我们将’module.’删除，所以代码从：</p>
+<pre><code>model.load_state_dict(torch.load(config.path))
+</code></pre>
+<p>变成：</p>
+<pre><code>from collections import OrderedDict
+
+checkpoint = torch.load(config.load_model)[&#39;state_dict&#39;]
+new_state_dict = OrderedDict()
+for k, v in checkpoint.items():
+    name = k[7:]
+    new_state_dict[name] = v
+model.load_state_dict(new_state_dict)
+</code></pre>
   
     </div> 
 
