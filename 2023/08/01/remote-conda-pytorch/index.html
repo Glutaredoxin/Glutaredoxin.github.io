@@ -10,7 +10,7 @@
 
     <!-- Page Title -->
     
-        <title>Archive | Glutaredoxin&#39;log</title>
+        <title>remote conda+pytorch | Glutaredoxin&#39;log</title>
     
     <link rel="icon" href="/img/strawberry.png">
     <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css">
@@ -58,8 +58,10 @@
     <div class="header-title-wrapper">
         <!-- Page Title -->
         <p class="header-title">
-              
-                Glutaredoxin&#39;log
+             
+                
+                    remote conda+pytorch
+                
             
         </p>  
     </div>    
@@ -79,7 +81,7 @@
 
                 
                     <span>
-                        <a class="header-btn" href="/archives" title="archives"><i class="fa fa fa-file-text-o"></i></a>
+                        <a class="catalog-btn header-btn"><i class="fa fa-list-ul"></i></a>
                     </span>
                 
             
@@ -89,93 +91,69 @@
 
             <!-- Main -->
             <main>
-                <!-- Archive -->
-<div class="archive-wrapper">
+                <article class="post-wrapper">
     
-    <div class="archive-block">
-        <!-- Post Title -->
-        <a href="/2023/08/01/remote-conda-pytorch/" title="remote conda+pytorch">
-            <span class="archive-post-title">remote conda+pytorch</span>
-        </a>
 
-        <!-- Date And Categories -->
-        <div>
-            <span class="archive-post-date">2023-08-01</span>
-            <span class="archive-categories">
-                
-            </span>
+    
+        <!-- Article Catalog -->
+        <div class="catalog-dropdown col-xs-12 col-sm-12">
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%F0%9F%A5%95-Configuring-a-remote-environment"><span class="toc-number">1.</span> <span class="toc-text">🥕 Configuring a remote environment</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1"><span class="toc-number">1.1.</span> <span class="toc-text">1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2"><span class="toc-number">1.2.</span> <span class="toc-text">2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3"><span class="toc-number">1.3.</span> <span class="toc-text">3</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4"><span class="toc-number">1.4.</span> <span class="toc-text">4</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5"><span class="toc-number">1.5.</span> <span class="toc-text">5</span></a></li></ol></li></ol>
         </div>
-    </div>
     
-    <div class="archive-block">
-        <!-- Post Title -->
-        <a href="/2023/05/09/PIL-and-CV2-and-MATPLOTLIB/" title="PIL and CV2 and MATPLOTLIB">
-            <span class="archive-post-title">PIL and CV2 and MATPLOTLIB</span>
-        </a>
 
-        <!-- Date And Categories -->
-        <div>
-            <span class="archive-post-date">2023-05-09</span>
-            <span class="archive-categories">
-                
-            </span>
-        </div>
-    </div>
     
-    <div class="archive-block">
-        <!-- Post Title -->
-        <a href="/2023/04/12/A-guide-of-paper-sentences/" title="A guide of paper sentences">
-            <span class="archive-post-title">A guide of paper sentences</span>
-        </a>
+        <!--For now, Lightbox Only Show in Post Layout -->
+        
 
-        <!-- Date And Categories -->
-        <div>
-            <span class="archive-post-date">2023-04-12</span>
-            <span class="archive-categories">
-                
-            </span>
-        </div>
-    </div>
-    
-    <div class="archive-block">
-        <!-- Post Title -->
-        <a href="/2023/04/11/Command-about-Hexo/" title="Command about Hexo">
-            <span class="archive-post-title">Command about Hexo</span>
-        </a>
-
-        <!-- Date And Categories -->
-        <div>
-            <span class="archive-post-date">2023-04-11</span>
-            <span class="archive-categories">
-                
-            </span>
-        </div>
-    </div>
-    
-    <div class="archive-block">
-        <!-- Post Title -->
-        <a href="/2023/04/11/Experience-about-PFENet/" title="Experience about PFENet">
-            <span class="archive-post-title">Experience about PFENet</span>
-        </a>
-
-        <!-- Date And Categories -->
-        <div>
-            <span class="archive-post-date">2023-04-11</span>
-            <span class="archive-categories">
-                
-            </span>
-        </div>
-    </div>
-    
-</div>
-
-<!-- Pagination -->
-<div class="pagination-wrapper">
-    <ul class="pagination-btn">
         
         
-    </ul>
-</div>
+    
+
+    
+
+    <!-- Article Content -->
+    <div class="post-content">
+        <h1 id="🥕-Configuring-a-remote-environment"><a href="#🥕-Configuring-a-remote-environment" class="headerlink" title="🥕 Configuring a remote environment"></a>🥕 Configuring a remote environment</h1><h2 id="1"><a href="#1" class="headerlink" title="1"></a>1</h2><pre><code>wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+</code></pre>
+<h2 id="2"><a href="#2" class="headerlink" title="2"></a>2</h2><pre><code>bash Miniconda3-latest-Linux-x86_64.sh
+</code></pre>
+<h2 id="3"><a href="#3" class="headerlink" title="3"></a>3</h2><pre><code>source ~/.bashrc
+</code></pre>
+<h2 id="4"><a href="#4" class="headerlink" title="4"></a>4</h2><pre><code>conda create -n envname python=3.8.3
+</code></pre>
+<h2 id="5"><a href="#5" class="headerlink" title="5"></a>5</h2><pre><code>conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia
+</code></pre>
+  
+    </div> 
+
+    
+        <!-- Division Line -->
+        <div class="division"></div> 
+    
+
+    <div class="post-info-wrapper">
+            
+                    <!-- Post Info -->
+                    <p class="post-date">2023-08-01</p>
+                    
+                    
+                        <p class="post-info-categories">
+                            
+                        </p>
+                    
+
+                    
+                        <p class="post-info-tags">
+                            
+                        </p>
+                    
+            
+    </div>
+</article>
+
+
+    
+
             </main>
 
             <!-- 'To Top' Btn-->

@@ -97,7 +97,7 @@
     
         <!-- Article Catalog -->
         <div class="catalog-dropdown col-xs-12 col-sm-12">
-            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%F0%9F%90%B6-PIL-and-CV2-and-MATPLOTLIB"><span class="toc-number">1.</span> <span class="toc-text">🐶 PIL and CV2 and MATPLOTLIB</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8C%AD-The-difference"><span class="toc-number">1.1.</span> <span class="toc-text">🌭 The difference</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8C%AD-shrink-mask"><span class="toc-number">1.2.</span> <span class="toc-text">🌭 shrink mask</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#No-1-require-contour-point"><span class="toc-number">1.2.1.</span> <span class="toc-text">No.1 require contour point</span></a></li></ol></li></ol></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%F0%9F%90%B6-PIL-and-CV2-and-MATPLOTLIB"><span class="toc-number">1.</span> <span class="toc-text">🐶 PIL and CV2 and MATPLOTLIB</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8C%AD-The-difference"><span class="toc-number">1.1.</span> <span class="toc-text">🌭 The difference</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8C%AD-shrink-mask"><span class="toc-number">1.2.</span> <span class="toc-text">🌭 shrink mask</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#No-1-require-contour-point"><span class="toc-number">1.2.1.</span> <span class="toc-text">No.1 require contour point</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#No-2-shrink-contours"><span class="toc-number">1.2.2.</span> <span class="toc-text">No.2 shrink contours</span></a></li></ol></li></ol></li></ol>
         </div>
     
 
@@ -198,7 +198,61 @@ cv2.waitKey(0)
 </code></pre>
 <p>Result:<br><img src="https://github.com/Glutaredoxin/image/raw/main/mask_contour_1.png" alt="mask"></p>
 <p>⬇️</p>
-<p>多余的contour.</p>
+<p>We found there are many coutours to draw, but we only need object contour.</p>
+<p>We need to select precise object contour.</p>
+<pre><code>before drawContours:
+
+max_item = -1
+maxc = 0
+for i in range(len(contours)):
+    if maxc &lt; len(contours[i]):
+        max_item = i
+        maxc = len(contours[i])
+
+cv2.drawContours(image1, contours, max_item, (0, 0, 1), 3)
+</code></pre>
+<p>Result:<br><img src="https://github.com/Glutaredoxin/image/raw/main/mask_contour_2.png" alt="image"></p>
+<h3 id="No-2-shrink-contours"><a href="#No-2-shrink-contours" class="headerlink" title="No.2 shrink contours"></a>No.2 shrink contours</h3><p>We need to shrink mask to the samller one.</p>
+<pre><code># gain mask contours
+kernel = np.ones((1, 5), np.uint8)
+
+ret, binary = cv2.threshold(mask_11[:, :, 0], 0, 255, cv2.THRESH_BINARY)
+
+binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel, anchor=(2, 0), iterations=5)
+
+contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+# gain object contours
+max_item = -1
+maxc = 0
+for i in range(len(contours)):
+    if maxc &lt; len(contours[i]):
+        max_item = i
+        maxc = len(contours[i])
+
+# transform contours&#39;s type to tuple which is adapt to shrink function.
+t_contour = []
+for j in range(len(contours[max_item])):
+    temp_t = tuple(contours[max_item][j][0])
+    t_contour.append(temp_t)
+t_contour = tuple(t_contour)
+t_contours = []
+t_contours.append(t_contour)
+t_contours = tuple(t_contours)
+
+# shrink function
+pco = pyclipper.PyclipperOffset()
+pco.AddPaths(t_contours, pyclipper.JT_ROUND, pyclipper.ET_CLOSEDPOLYGON)
+solution = pco.Execute(-int(10 / 2))
+
+# tuple(numpy[])
+solution = np.array(solution)
+solution_1 = []
+solution_1.append(solution)
+
+solution_1 = tuple(solution_1)
+</code></pre>
+<p><img src="https://github.com/Glutaredoxin/image/raw/main/mask_1.png" alt="image"></p>
   
     </div> 
 
