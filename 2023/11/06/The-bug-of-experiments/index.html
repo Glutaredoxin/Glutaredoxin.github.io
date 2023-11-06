@@ -115,6 +115,13 @@
     <div class="post-content">
         <h1 id="🥕-The-bug-in-experiments"><a href="#🥕-The-bug-in-experiments" class="headerlink" title="🥕 The bug in experiments"></a>🥕 The bug in experiments</h1><h2 id="1-RuntimeError-one-of-the-variables-needed-for-gradient-computation-has-been-modified-by-an-inplace-operation-torch-FloatTensor-784-512-which-is-output-0-of-TBackward-is-at-version-3-expected-version-2-instead-Hint-enable-anomaly-detection-to-find-the-operation-that-failed-to-compute-its-gradient-with-torch-autograd-set-detect-anomaly-True"><a href="#1-RuntimeError-one-of-the-variables-needed-for-gradient-computation-has-been-modified-by-an-inplace-operation-torch-FloatTensor-784-512-which-is-output-0-of-TBackward-is-at-version-3-expected-version-2-instead-Hint-enable-anomaly-detection-to-find-the-operation-that-failed-to-compute-its-gradient-with-torch-autograd-set-detect-anomaly-True" class="headerlink" title="1. RuntimeError: one of the variables needed for gradient computation has been modified by an inplace operation: [torch.FloatTensor [784, 512]], which is output 0 of TBackward, is at version 3; expected version 2 instead. Hint: enable anomaly detection to find the operation that failed to compute its gradient, with torch.autograd.set_detect_anomaly(True)."></a>1. RuntimeError: one of the variables needed for gradient computation has been modified by an inplace operation: [torch.FloatTensor [784, 512]], which is output 0 of TBackward, is at version 3; expected version 2 instead. Hint: enable anomaly detection to find the operation that failed to compute its gradient, with torch.autograd.set_detect_anomaly(True).</h2><p>这有可能是因为最终送入到loss function中的结果是被卷积块（这个卷积块可能中最终一个函数是ReLU）。这样就会出现inplace的问题。</p>
 <p>inplace是原地操作，一般见于sigmoid以及relu中。是在旧内存上直接更改数值。这种原地操作更加节省内存，但是如果该内存被其他变量引用的话，就可能导致计算一致性的问题。</p>
+<p>🔸这个时候可以看一下版本问题。</p>
+<pre><code>xxx._version
+</code></pre>
+<p>一般经过原地操作后的参数version会+1。</p>
+<p>但是如果我们经过了其他操作的话，就不会出现类似的问题。比如：</p>
+<pre><code>feature = conv_with_lastrelu(feature) + feature
+</code></pre>
   
     </div> 
 
