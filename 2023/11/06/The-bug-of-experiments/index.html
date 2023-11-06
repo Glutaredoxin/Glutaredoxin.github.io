@@ -10,7 +10,7 @@
 
     <!-- Page Title -->
     
-        <title>Command about Hexo | Glutaredoxin&#39;log</title>
+        <title>The bug of experiments | Glutaredoxin&#39;log</title>
     
     <link rel="icon" href="/img/strawberry.png">
     <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css">
@@ -60,7 +60,7 @@
         <p class="header-title">
              
                 
-                    Command about Hexo
+                    The bug of experiments
                 
             
         </p>  
@@ -97,7 +97,7 @@
     
         <!-- Article Catalog -->
         <div class="catalog-dropdown col-xs-12 col-sm-12">
-            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%F0%9F%8C%BFCommand-about-Hexo"><span class="toc-number">1.</span> <span class="toc-text">🌿Command about Hexo</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8C%B1git-bash"><span class="toc-number">1.1.</span> <span class="toc-text">🌱git bash:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8C%B1logo-app"><span class="toc-number">1.2.</span> <span class="toc-text">🌱logo app</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8C%B3afflatus"><span class="toc-number">1.3.</span> <span class="toc-text">🌳afflatus</span></a></li></ol></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%F0%9F%A5%95-The-bug-in-experiments"><span class="toc-number">1.</span> <span class="toc-text">🥕 The bug in experiments</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-RuntimeError-one-of-the-variables-needed-for-gradient-computation-has-been-modified-by-an-inplace-operation-torch-FloatTensor-784-512-which-is-output-0-of-TBackward-is-at-version-3-expected-version-2-instead-Hint-enable-anomaly-detection-to-find-the-operation-that-failed-to-compute-its-gradient-with-torch-autograd-set-detect-anomaly-True"><span class="toc-number">1.1.</span> <span class="toc-text">1. RuntimeError: one of the variables needed for gradient computation has been modified by an inplace operation: [torch.FloatTensor [784, 512]], which is output 0 of TBackward, is at version 3; expected version 2 instead. Hint: enable anomaly detection to find the operation that failed to compute its gradient, with torch.autograd.set_detect_anomaly(True).</span></a></li></ol></li></ol>
         </div>
     
 
@@ -113,24 +113,8 @@
 
     <!-- Article Content -->
     <div class="post-content">
-        <h1 id="🌿Command-about-Hexo"><a href="#🌿Command-about-Hexo" class="headerlink" title="🌿Command about Hexo"></a>🌿Command about Hexo</h1><p>Keeping a journal of common commands for forgetting.</p>
-<h2 id="🌱git-bash"><a href="#🌱git-bash" class="headerlink" title="🌱git bash:"></a>🌱git bash:</h2><p>when we want to add new file, we can:</p>
-<pre><code>npx hexo new &quot;filename&quot;
-</code></pre>
-<p>when we accomplish the file and want to upload:</p>
-<pre><code>npx hexo g
-npx hexo d
-</code></pre>
-<p>The above commands is in the <strong>‘f&#x2F;git_blog’</strong>. And the corresponding files are in <strong>‘f&#x2F;git_blog&#x2F;source&#x2F;_posts’</strong>.</p>
-<h2 id="🌱logo-app"><a href="#🌱logo-app" class="headerlink" title="🌱logo app"></a>🌱logo app</h2><p>blog image:</p>
-<p><a target="_blank" rel="noopener" href="https://www.iconfinder.com/">iconfinder</a></p>
-<p>markdown logo:</p>
-<p><a target="_blank" rel="noopener" href="https://www.emojisearch.app/">emojisearch</a></p>
-<p>Theme:</p>
-<p><a target="_blank" rel="noopener" href="https://hexo.io/themes/">theme choice</a></p>
-<p>I used theme:</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/voezy/hexo-theme-wind#%E6%9B%B4%E5%A4%9A">used theme</a></p>
-<h2 id="🌳afflatus"><a href="#🌳afflatus" class="headerlink" title="🌳afflatus"></a>🌳afflatus</h2><p><a target="_blank" rel="noopener" href="https://lilianweng.github.io/">Lil’log</a></p>
+        <h1 id="🥕-The-bug-in-experiments"><a href="#🥕-The-bug-in-experiments" class="headerlink" title="🥕 The bug in experiments"></a>🥕 The bug in experiments</h1><h2 id="1-RuntimeError-one-of-the-variables-needed-for-gradient-computation-has-been-modified-by-an-inplace-operation-torch-FloatTensor-784-512-which-is-output-0-of-TBackward-is-at-version-3-expected-version-2-instead-Hint-enable-anomaly-detection-to-find-the-operation-that-failed-to-compute-its-gradient-with-torch-autograd-set-detect-anomaly-True"><a href="#1-RuntimeError-one-of-the-variables-needed-for-gradient-computation-has-been-modified-by-an-inplace-operation-torch-FloatTensor-784-512-which-is-output-0-of-TBackward-is-at-version-3-expected-version-2-instead-Hint-enable-anomaly-detection-to-find-the-operation-that-failed-to-compute-its-gradient-with-torch-autograd-set-detect-anomaly-True" class="headerlink" title="1. RuntimeError: one of the variables needed for gradient computation has been modified by an inplace operation: [torch.FloatTensor [784, 512]], which is output 0 of TBackward, is at version 3; expected version 2 instead. Hint: enable anomaly detection to find the operation that failed to compute its gradient, with torch.autograd.set_detect_anomaly(True)."></a>1. RuntimeError: one of the variables needed for gradient computation has been modified by an inplace operation: [torch.FloatTensor [784, 512]], which is output 0 of TBackward, is at version 3; expected version 2 instead. Hint: enable anomaly detection to find the operation that failed to compute its gradient, with torch.autograd.set_detect_anomaly(True).</h2><p>这有可能是因为最终送入到loss function中的结果是被卷积块（这个卷积块可能中最终一个函数是ReLU）。这样就会出现inplace的问题。</p>
+<p>inplace是原地操作，一般见于sigmoid以及relu中。是在旧内存上直接更改数值。这种原地操作更加节省内存，但是如果该内存被其他变量引用的话，就可能导致计算一致性的问题。</p>
   
     </div> 
 
@@ -142,7 +126,7 @@ npx hexo d
     <div class="post-info-wrapper">
             
                     <!-- Post Info -->
-                    <p class="post-date">2023-04-11</p>
+                    <p class="post-date">2023-11-06</p>
                     
                     
                         <p class="post-info-categories">
