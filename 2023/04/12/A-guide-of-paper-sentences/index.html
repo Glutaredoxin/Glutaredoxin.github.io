@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>A guide of paper sentences | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="🖊️A guide of paper sentences👉limited data  Given a task and enough labels, superivsed learning can solve it really well. Good performance usually requires a decent amount of labels, but collecting *">
+<meta property="og:type" content="article">
+<meta property="og:title" content="A guide of paper sentences">
+<meta property="og:url" content="https://github.com/Glutaredoxin/Glutaredoxin.github.io.git/2023/04/12/A-guide-of-paper-sentences/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="🖊️A guide of paper sentences👉limited data  Given a task and enough labels, superivsed learning can solve it really well. Good performance usually requires a decent amount of labels, but collecting *">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/Glutaredoxin/image/main/CPC.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/Glutaredoxin/image/main/CPC%20framework.jpg">
+<meta property="article:published_time" content="2023-04-12T01:08:11.000Z">
+<meta property="article:modified_time" content="2024-12-10T10:13:07.470Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Glutaredoxin/image/main/CPC.jpg">
+  
+    <link rel="alternate" href="/Glutaredoxin/Glutaredoxin.github.io.git/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/Glutaredoxin/Glutaredoxin.github.io.git/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/Glutaredoxin/Glutaredoxin.github.io.git/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/Glutaredoxin/Glutaredoxin.github.io.git/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/Glutaredoxin/Glutaredoxin.github.io.git/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/Glutaredoxin/Glutaredoxin.github.io.git/">Home</a>
+        
+          <a class="main-nav-link" href="/Glutaredoxin/Glutaredoxin.github.io.git/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/Glutaredoxin/Glutaredoxin.github.io.git/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://github.com/Glutaredoxin/Glutaredoxin.github.io.git"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-A-guide-of-paper-sentences" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/Glutaredoxin/Glutaredoxin.github.io.git/2023/04/12/A-guide-of-paper-sentences/" class="article-date">
+  <time class="dt-published" datetime="2023-04-12T01:08:11.000Z" itemprop="datePublished">2023-04-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      A guide of paper sentences
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="🖊️A-guide-of-paper-sentences"><a href="#🖊️A-guide-of-paper-sentences" class="headerlink" title="🖊️A guide of paper sentences"></a>🖊️A guide of paper sentences</h1><h2 id="👉limited-data"><a href="#👉limited-data" class="headerlink" title="👉limited data"></a>👉limited data</h2><ol>
+<li>
+Given a task and enough labels, superivsed learning can solve it really well. Good performance usually requires a decent amount of labels, but collecting **mutual labels** is expensive.
+</li>
+<li>
+Producing a dataset with clean labels is expensive but unlabeled data is being generated all the time.
+</li>
+</ol>
+
+<h3 id="🔸Self-supervised-learning"><a href="#🔸Self-supervised-learning" class="headerlink" title="🔸Self-supervised learning:"></a>🔸Self-supervised learning:</h3><p>We are interested in the learned intermediate representation with expectation that this representation can carry good semantic or structural meanings and can be beneficial to a variety of practical downstream tasks.</p>
+<p>Like we train the auxiliary model to predict which images are rotated. Acutually, the accuracy is unimportant. Rather we expect the model to learn <strong>high-quality latent variables</strong> for real-world tasks. </p>
+<p>All the generative models can be considered as self-supervised with different goals. [Assume: tasks according to the self images]</p>
+<p>Recently, some researchers proposed to train supervised learning on labelled data and self-supervised pretext tasks on unlabelled data simultaneously with shared weights.</p>
+<table>
+<thead>
+<tr>
+<th>method</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Distortion</td>
+<td>small distortion on a image does not modify its original semantic meaning or geometric forms.</td>
+</tr>
+<tr>
+<td>patches</td>
+<td>extract multiple patches from one image and ask the model to predict the relationship between these patches.[DeepEmd]</td>
+</tr>
+<tr>
+<td>colorization</td>
+<td></td>
+</tr>
+<tr>
+<td>generating model</td>
+<td>reconstruct thr original input while learning meaningful latent representation</td>
+</tr>
+<tr>
+<td>contrastive learning</td>
+<td>↩🔹</td>
+</tr>
+</tbody></table>
+<p>↩🔹contrastive learning – <strong>CPC (Contrastive Predictive Coding)</strong></p>
+<p>We expect the feature representations are high-dimensionally, which <strong>focuses more on global and semantic information</strong> rather in the pixel levels. </p>
+<p>CPC utilizes the relavance between samples in sequence to excavate the feature of features. <strong>The single image can obtain the inner relavance by cutting in a certain direction.</strong></p>
+<p>Center on single image:<br><img src="https://raw.githubusercontent.com/Glutaredoxin/image/main/CPC.jpg" alt="CPC"></p>
+<p>Sampling the overlapped patches from the single image as relavance sequence $[x_1, x_2, …, x_n]$.</p>
+<p>Positive sample: <strong>sequential sampling</strong></p>
+<p>$[x_{t-3}, x_{t-2}, x_{t-1}, x_{t}]$ -&gt; $[x_{t+1}, x_{t+2}, x_{t+3}, x_{t+4}]$</p>
+<p>utilize the first 4 to predict the last 4.</p>
+<p>Negative sample: <strong>random sampling</strong><br>$[x_{t-3}, x_{t-2}, x_{t-1}, x_{t}]$ -&gt; $[x_{a}, x_{b}, x_{c}, x_{d}]$<br><img src="https://raw.githubusercontent.com/Glutaredoxin/image/main/CPC%20framework.jpg" alt="CPC_framework"></p>
+<p>Input anchor to encoder to obtain $[z_{t-3}, z_{t-2}, z_{t-1}, z_{t}]$, and then feed into 循环网络 to contxt vector $c_t$. <strong>It noted that $c_t$ is the feature across the multiple time steps.</strong></p>
+<p>$z_t$ and $c_t$ can be the feature representations of $x_t$. $z_t$ focuses on the single step and $c_t$ focuses on the multiple steps.</p>
+<h2 id="👉-Contrastive-Representation-Learning"><a href="#👉-Contrastive-Representation-Learning" class="headerlink" title="👉 Contrastive Representation Learning"></a>👉 Contrastive Representation Learning</h2><ol>
+<li>
+The goal of contrastive representation learning is to learn such an **embedding space** in which **similar sample pairs stay close to each other while dissimilar ones are far away**.
+</li>
+<li>
+Contrastive learning can be applied to both supervised and unsupervised settings. And **contrastive learning with unsupervised data is the most powerful approaches in self-supervised learning**.
+</li>
+</ol>
+
+<h3 id="lefted-structured-loss-2015-结构化损失"><a href="#lefted-structured-loss-2015-结构化损失" class="headerlink" title="lefted structured loss (2015)[结构化损失]:"></a>lefted structured loss (2015)[结构化损失]:</h3><p>unlike contrastive loss or triplet loss choose one negative, lefted structured loss chooses the all negative in mini-batch to compute loss.</p>
+<p>$$L &#x3D; \frac{1}{2|P|}\sum_{(i,j)\in P}max(0, L_{i,j})^2$$</p>
+<p>$$L_{i,j}&#x3D;max(max_{(i,k)\in N}(\alpha-D_{i,k}), max_{(j,k) \in N}(\alpha-D_{j,k})) + D_{i,j}$$</p>
+<p>So, loss is composed by the minimal distance from i or from j, and the embedding distance between i and j.<br><strong>The lifted structure loss will considers all negative samples in mini-batch for each positive samples i and j.</strong></p>
+<h3 id="Multi-class-N-pair-loss-2016"><a href="#Multi-class-N-pair-loss-2016" class="headerlink" title="Multi-class N-pair loss (2016):"></a>Multi-class N-pair loss (2016):</h3><p>$$L_{n-pair}(x, x^{+}, {x_i^{-}}<em>{i&#x3D;1}^{N-1})&#x3D;-log \frac{exp(f(x)^Tf(x^+))}{exp(f(x)^Tf(x^+)) + \sum</em>{i&#x3D;1}^{N-1}exp(f(x)^Tf(x_i^{-}))}$$</p>
+<p>we can see, if we only sample one negative sample per class, it is euivalent to the <strong>softmax loss for multi-class classification</strong>.</p>
+<h3 id="NCE-Noise-Contrastive-Estimation"><a href="#NCE-Noise-Contrastive-Estimation" class="headerlink" title="NCE (Noise Contrastive Estimation):"></a>NCE (Noise Contrastive Estimation):</h3><p>run logistic regression to tell apart the target data from noise.</p>
+<ol>
+<li>
+InfoNCE(2018) -- CPC
+</li>
+<li>
+Soft-Nearest Neighbors loss(2019)
+</li>
+</ol>
+The relationship of InfoNCE and cross-entropy loss:
+
+<p>Let’s start with softmax:<br>$$\hat{y_{+}}&#x3D;softmax(z_{+})&#x3D;\frac{exp(z_{+})}{\sum_{i&#x3D;0}^{k}exp(z_{i})}$$</p>
+<p>and cross-entropy loss:<br>$$L(\hat{y})&#x3D;-\sum_{i \in K}y_ilog(\hat{y_i})&#x3D;-log\frac{exp(z_{+})}{\sum_{i&#x3D;0}^{k}exp(z_{i})}$$</p>
+<p>and k is the number of classes.</p>
+<p>if we use cross-entropy to compute the contrastive learning, it is unsuccessful. Because through data augmentation, <strong>the number of images we have, the number of classes we have,</strong> and the dimentional of one-hot vector is so high.</p>
+<p>So we introduce the NCE loss. we <strong>split the multi-classification into binary-classification</strong>. one class is data sample and another is noisy sample. 我们将数据样本与噪声样本进行比较，根据噪声对比，发现数据中的某些特性。当然，如果将整个数据集剩下的数据都当作负样本，计算复杂度很高，所以我们对负样本进行采样。当然，负样本选取越多，越接近整个数据集，效果越好。</p>
+<p>但是，NCE Loss只是二分类，也就是将所有负样本都当作一个类，但其实负样本是由多个类组成的，所以还是当成多分类任务比较好。</p>
+<p>$$L_q &#x3D; -log\frac{exp(q k_{+})}{\sum_{i&#x3D;0}^{k}exp(q k_{i})}$$</p>
+<p>这里的k其实就是采样的负样本数量。</p>
+<h2 id="🎉some-localism"><a href="#🎉some-localism" class="headerlink" title="🎉some localism"></a>🎉some localism</h2><ol>
+<li>
+The motivation is quite straightforward.
+</li>
+<li>
+Broadly speaking, 
+</li>
+<li>
+NXX CXX, short for NC. (简称)
+</li>
+<li>
+tell apart A from B. 区分A和B
+</li>
+<li>
+XXX is an important stepping stone towards XXX. (Unsupervised learning is an important stepping stone towards robust and generic representation learning.)垫脚石。
+</li>
+<li>
+remain elusive. 是难以理解的。
+</li>
+<li>
+A good representation should be simple and compact with good generalization ability to avoid overfitting.
+</li>
+<li>
+XXX needs only one clean and efficient step.
+</li>
+<li>
+底层的特征对于小物体检测是非常有帮助的。 -- FPN
+</li>
+</ol>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://github.com/Glutaredoxin/Glutaredoxin.github.io.git/2023/04/12/A-guide-of-paper-sentences/" data-id="cm4ib0a1h00008c9sb0h8cn8m" data-title="A guide of paper sentences" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/Glutaredoxin/Glutaredoxin.github.io.git/2023/05/09/PIL-and-CV2-and-MATPLOTLIB/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          PIL and CV2 and MATPLOTLIB
+        
+      </div>
+    </a>
+  
+  
+    <a href="/Glutaredoxin/Glutaredoxin.github.io.git/2023/04/11/Command-about-Hexo/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Command about Hexo</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/Glutaredoxin/Glutaredoxin.github.io.git/archives/2024/12/">December 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/Glutaredoxin/Glutaredoxin.github.io.git/archives/2024/11/">November 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/Glutaredoxin/Glutaredoxin.github.io.git/archives/2023/12/">December 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/Glutaredoxin/Glutaredoxin.github.io.git/archives/2023/11/">November 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/Glutaredoxin/Glutaredoxin.github.io.git/archives/2023/08/">August 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/Glutaredoxin/Glutaredoxin.github.io.git/archives/2023/05/">May 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/Glutaredoxin/Glutaredoxin.github.io.git/archives/2023/04/">April 2023</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Glutaredoxin/Glutaredoxin.github.io.git/2024/12/10/The-problem-of-PyQt5/">The problem of PyQt5</a>
+          </li>
+        
+          <li>
+            <a href="/Glutaredoxin/Glutaredoxin.github.io.git/2024/11/15/problem-of-PyQt/">problem of PyQt]</a>
+          </li>
+        
+          <li>
+            <a href="/Glutaredoxin/Glutaredoxin.github.io.git/2023/12/04/first-journal-paper/">first journal paper</a>
+          </li>
+        
+          <li>
+            <a href="/Glutaredoxin/Glutaredoxin.github.io.git/2023/11/06/The-bug-of-experiments/">The bug of experiments</a>
+          </li>
+        
+          <li>
+            <a href="/Glutaredoxin/Glutaredoxin.github.io.git/2023/08/01/remote-conda-pytorch/">remote conda+pytorch</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/Glutaredoxin/Glutaredoxin.github.io.git/" class="mobile-nav-link">Home</a>
+  
+    <a href="/Glutaredoxin/Glutaredoxin.github.io.git/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/Glutaredoxin/Glutaredoxin.github.io.git/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/Glutaredoxin/Glutaredoxin.github.io.git/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/Glutaredoxin/Glutaredoxin.github.io.git/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

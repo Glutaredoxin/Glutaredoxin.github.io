@@ -4,17 +4,17 @@
   <meta charset="utf-8">
   
   
-  <title>The problem of PyQt5 | Hexo</title>
+  <title>The bug of experiments | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="🖊️ The problem of PyQt5Noted:if you find the problem like above: 1This application failed to start because not Qt platform plugin could be initialized.  Maybe you can utilized the command like above:">
+  <meta name="description" content="🥕 The bug in experiments1. RuntimeError: one of the variables needed for gradient computation has been modified by an inplace operation: [torch.FloatTensor [784, 512]], which is output 0 of TBackward">
 <meta property="og:type" content="article">
-<meta property="og:title" content="The problem of PyQt5">
-<meta property="og:url" content="https://github.com/Glutaredoxin/Glutaredoxin.github.io.git/2024/12/10/The-problem-of-PyQt5/index.html">
+<meta property="og:title" content="The bug of experiments">
+<meta property="og:url" content="https://github.com/Glutaredoxin/Glutaredoxin.github.io.git/2023/11/06/The-bug-of-experiments/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="🖊️ The problem of PyQt5Noted:if you find the problem like above: 1This application failed to start because not Qt platform plugin could be initialized.  Maybe you can utilized the command like above:">
+<meta property="og:description" content="🥕 The bug in experiments1. RuntimeError: one of the variables needed for gradient computation has been modified by an inplace operation: [torch.FloatTensor [784, 512]], which is output 0 of TBackward">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2024-12-10T05:59:47.000Z">
-<meta property="article:modified_time" content="2024-12-10T06:10:44.030Z">
+<meta property="article:published_time" content="2023-11-06T11:24:53.000Z">
+<meta property="article:modified_time" content="2024-12-10T10:13:08.045Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
   
@@ -71,10 +71,10 @@
 </header>
 
       <div class="outer">
-        <section id="main"><article id="post-The-problem-of-PyQt5" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+        <section id="main"><article id="post-The-bug-of-experiments" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
-    <a href="/Glutaredoxin/Glutaredoxin.github.io.git/2024/12/10/The-problem-of-PyQt5/" class="article-date">
-  <time class="dt-published" datetime="2024-12-10T05:59:47.000Z" itemprop="datePublished">2024-12-10</time>
+    <a href="/Glutaredoxin/Glutaredoxin.github.io.git/2023/11/06/The-bug-of-experiments/" class="article-date">
+  <time class="dt-published" datetime="2023-11-06T11:24:53.000Z" itemprop="datePublished">2023-11-06</time>
 </a>
     
   </div>
@@ -85,7 +85,7 @@
         
   
     <h1 class="p-name article-title" itemprop="headline name">
-      The problem of PyQt5
+      The bug of experiments
     </h1>
   
 
@@ -93,15 +93,18 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <h1 id="🖊️-The-problem-of-PyQt5"><a href="#🖊️-The-problem-of-PyQt5" class="headerlink" title="🖊️ The problem of PyQt5"></a>🖊️ The problem of PyQt5</h1><h2 id="Noted"><a href="#Noted" class="headerlink" title="Noted:"></a>Noted:</h2><p>if you find the problem like above:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">This application failed to start because not Qt platform plugin could be initialized.</span><br></pre></td></tr></table></figure>
+        <h1 id="🥕-The-bug-in-experiments"><a href="#🥕-The-bug-in-experiments" class="headerlink" title="🥕 The bug in experiments"></a>🥕 The bug in experiments</h1><h2 id="1-RuntimeError-one-of-the-variables-needed-for-gradient-computation-has-been-modified-by-an-inplace-operation-torch-FloatTensor-784-512-which-is-output-0-of-TBackward-is-at-version-3-expected-version-2-instead-Hint-enable-anomaly-detection-to-find-the-operation-that-failed-to-compute-its-gradient-with-torch-autograd-set-detect-anomaly-True"><a href="#1-RuntimeError-one-of-the-variables-needed-for-gradient-computation-has-been-modified-by-an-inplace-operation-torch-FloatTensor-784-512-which-is-output-0-of-TBackward-is-at-version-3-expected-version-2-instead-Hint-enable-anomaly-detection-to-find-the-operation-that-failed-to-compute-its-gradient-with-torch-autograd-set-detect-anomaly-True" class="headerlink" title="1. RuntimeError: one of the variables needed for gradient computation has been modified by an inplace operation: [torch.FloatTensor [784, 512]], which is output 0 of TBackward, is at version 3; expected version 2 instead. Hint: enable anomaly detection to find the operation that failed to compute its gradient, with torch.autograd.set_detect_anomaly(True)."></a>1. RuntimeError: one of the variables needed for gradient computation has been modified by an inplace operation: [torch.FloatTensor [784, 512]], which is output 0 of TBackward, is at version 3; expected version 2 instead. Hint: enable anomaly detection to find the operation that failed to compute its gradient, with torch.autograd.set_detect_anomaly(True).</h2><p>这有可能是因为最终送入到loss function中的结果是被卷积块（这个卷积块可能中最终一个函数是ReLU）。这样就会出现inplace的问题。</p>
+<p>inplace是原地操作，一般见于sigmoid以及relu中。是在旧内存上直接更改数值。这种原地操作更加节省内存，但是如果该内存被其他变量引用的话，就可能导致计算一致性的问题。</p>
+<p>🔸这个时候可以看一下版本问题。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xxx._version</span><br></pre></td></tr></table></figure>
+<p>一般经过原地操作后的参数version会+1。</p>
+<p>但是如果我们经过了其他操作的话，就不会出现类似的问题。比如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">feature = conv_with_lastrelu(feature) + feature</span><br></pre></td></tr></table></figure>
 
-<p>Maybe you can utilized the command like above:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install opencv-pthon-headless</span><br></pre></td></tr></table></figure>
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://github.com/Glutaredoxin/Glutaredoxin.github.io.git/2024/12/10/The-problem-of-PyQt5/" data-id="cm4i2cd8i0000y99s3ijbhc64" data-title="The problem of PyQt5" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://github.com/Glutaredoxin/Glutaredoxin.github.io.git/2023/11/06/The-bug-of-experiments/" data-id="cm4ib0a1j00048c9sbib4dg52" data-title="The bug of experiments" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -111,10 +114,19 @@
     
 <nav id="article-nav">
   
+    <a href="/Glutaredoxin/Glutaredoxin.github.io.git/2023/12/04/first-journal-paper/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          first journal paper
+        
+      </div>
+    </a>
   
-    <a href="/Glutaredoxin/Glutaredoxin.github.io.git/2024/11/15/problem-of-PyQt/" id="article-nav-older" class="article-nav-link-wrap">
+  
+    <a href="/Glutaredoxin/Glutaredoxin.github.io.git/2023/08/01/remote-conda-pytorch/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">problem of PyQt]</div>
+      <div class="article-nav-title">remote conda+pytorch</div>
     </a>
   
 </nav>
