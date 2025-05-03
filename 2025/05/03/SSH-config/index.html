@@ -113,7 +113,7 @@
 
     <!-- Article Content -->
     <div class="post-content">
-        <h1 id="远程连接时可能出现的问题"><a href="#远程连接时可能出现的问题" class="headerlink" title="远程连接时可能出现的问题"></a>远程连接时可能出现的问题</h1><h2 id="出现WARNING-REMOTE-HOST-IDENTIFICATION-HAS-CHANGED！"><a href="#出现WARNING-REMOTE-HOST-IDENTIFICATION-HAS-CHANGED！" class="headerlink" title="出现WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED！"></a>出现WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED！</h2><p>解决：<br><code>ssh-keygen -R 192.168.58.145</code></p>
+        <h1 id="远程连接时可能出现的问题"><a href="#远程连接时可能出现的问题" class="headerlink" title="远程连接时可能出现的问题"></a>远程连接时可能出现的问题</h1><h2 id="出现WARNING-REMOTE-HOST-IDENTIFICATION-HAS-CHANGED！"><a href="#出现WARNING-REMOTE-HOST-IDENTIFICATION-HAS-CHANGED！" class="headerlink" title="出现WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED！"></a>出现WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED！</h2><p>解决：<br><code>ssh-keygen -R 192.168.XX.XXX</code></p>
 <h2 id="下载驱动"><a href="#下载驱动" class="headerlink" title="下载驱动"></a>下载驱动</h2><p><code>sudo apt-get install g++</code></p>
 <p><code>sudo apt-get install gcc</code></p>
 <p><code>sudo apt-get install cmake</code></p>
@@ -152,7 +152,8 @@
 <h2 id="配置用户组，使得brl可以直接使用docker，而不是sudo-docker"><a href="#配置用户组，使得brl可以直接使用docker，而不是sudo-docker" class="headerlink" title="配置用户组，使得brl可以直接使用docker，而不是sudo docker"></a>配置用户组，使得brl可以直接使用docker，而不是sudo docker</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo usermod -aG docker brl # brl添加进用户组</span><br><span class="line">newgrp docker # 重启服务</span><br><span class="line">groups brl # 查看是否安装成功（输出：brl : brl adm cdrom sudo dip plugdev lpadmin lxd sambashare docker安装成功</span><br><span class="line">）</span><br></pre></td></tr></table></figure>
 
 <h2 id="导入镜像"><a href="#导入镜像" class="headerlink" title="导入镜像"></a>导入镜像</h2><p>存储的镜像和docker是在“&#x2F;media&#x2F;brl&#x2F;d177acba-c04e-4a5c-b4d2-f7005e8c4035”中</p>
-<p><code>docker import dzy.tar dzy</code></p>
+<p><code>docker import XXX.tar XX</code></p>
+<p>其中，XX表示为这个镜像命名名称。</p>
 <p><code>docker images # 查看镜像</code></p>
 <p><code>docker run --gpus 2 -dit -p2345:22 --name=[container名称] -h=LAB_VM --ipc=host -v /home/disk1/stu_data:/data [镜像名] bin/bash # 查看镜像</code></p>
 <p>2、docker container ls -a</p>
@@ -160,13 +161,13 @@
 <p>4、docker ps</p>
 <p>5、docker exec -it [your docker]   &#x2F;bin&#x2F;bash</p>
 <p>6、service ssh restart</p>
-<p>将文件全部挂在到&#x2F;home&#x2F;disk1&#x2F;stu_data、</p>
+<p>将文件全部挂在到&#x2F;home&#x2F;disk1&#x2F;stu_data</p>
 <p><code>lsblk # 查看文件/media/brl/d177acba-c04e-4a5c-b4d2-f7005e8c4035在那个dev中</code></p>
 <p>进行挂载</p>
 <p><code>sudo mkdir -p /home/disk1/stu_data # 创建一个文件夹用于挂载</code></p>
 <p><code>sudo mount /dev/sda /home/disk1/stu_data # 进行挂载</code></p>
-<h2 id="创建一个非root用户，使其可以ssh和docker"><a href="#创建一个非root用户，使其可以ssh和docker" class="headerlink" title="创建一个非root用户，使其可以ssh和docker"></a>创建一个非root用户，使其可以ssh和docker</h2><p><code>sudo adduser stu</code></p>
-<p>用户名：stu，密码：stu</p>
+<h2 id="创建一个非root用户，使其可以ssh和docker"><a href="#创建一个非root用户，使其可以ssh和docker" class="headerlink" title="创建一个非root用户，使其可以ssh和docker"></a>创建一个非root用户，使其可以ssh和docker</h2><p><code>sudo adduser XXX</code></p>
+<p>用户名：XXX，密码：XXX</p>
 <p><code>sudo systemctl restart sshd</code></p>
 <p>使得这个用户可以使用docker</p>
 <p><code>getent group docker # 查看docker组中的用户</code></p>
